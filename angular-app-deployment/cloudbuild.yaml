@@ -1,0 +1,19 @@
+steps:
+- name: node
+  entrypoint : npm
+  dir : 'todo-list-app/'
+  args : ['run','deploy']
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['app','deploy']
+# Build the container image
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/todo-list-app-342504/third-image', '.']
+# Push the container image to Container Registry
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/todo-list-app-342504/third-image']
+
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: gcloud
+  args: ['run', 'deploy', 'third-image', '--image', 'gcr.io/todo-list-app-342504/third-image', '--region', 'us-west4']
+images:
+- gcr.io/todo-list-app-342504/third-image
